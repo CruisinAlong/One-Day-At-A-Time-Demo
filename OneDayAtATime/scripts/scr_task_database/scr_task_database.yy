@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_task_database",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_task_database",
+  "parent":{
+    "name":"group1",
+    "path":"folders/group1.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

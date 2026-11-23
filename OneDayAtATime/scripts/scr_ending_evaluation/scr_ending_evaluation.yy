@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_ending_evaluation",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_ending_evaluation",
+  "parent":{
+    "name":"group1",
+    "path":"folders/group1.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
