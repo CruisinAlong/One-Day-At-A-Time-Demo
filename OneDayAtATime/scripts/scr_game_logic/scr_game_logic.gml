@@ -2,7 +2,6 @@
 /// task repositioning. Q3 scheduling / Q4 discard-defer storage live in
 /// scr_task_scheduling.gml and are called from here at the right moments.
 
-/// @function game_start_new_day()
 function game_start_new_day() {
     with (obj_game_controller) {
         show_debug_message("=== [game_start_new_day] START Day " + string(game_day) + " ===");
@@ -105,8 +104,8 @@ function return_task_to_available(_task) {
     }
 }
 
-/// @function get_quadrant_rect(_key)
-/// @description Returns {x, y, w, h} for one quarter of the single matrix
+
+/// Returns {x, y, w, h} for one quarter of the single matrix
 /// frame (split evenly by the cross-divider lines).
 function get_quadrant_rect(_key) {
     with (obj_game_controller) {
@@ -129,8 +128,8 @@ function get_quadrant_card_rect(_key, _index) {
     }
 }
 
-/// @function get_available_card_rect(_index)
-/// @description Returns the rect for the available-task card at _index,
+
+/// Returns the rect for the available-task card at _index,
 /// arranged in a grid (card_cols columns) on the right side of the screen.
 function get_available_card_rect(_index) {
     with (obj_game_controller) {

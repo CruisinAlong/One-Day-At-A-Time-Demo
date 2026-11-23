@@ -1,5 +1,4 @@
-/// @function sync_task_cards()
-/// @description Destroys all existing obj_task_card instances and respawns
+/// Destroys all existing obj_task_card instances and respawns
 /// them to match the current available_tasks / quadrant_tasks data. Call
 /// this any time those arrays change (assignment, return-to-available,
 /// Q4 discard/defer, new day start).
@@ -28,8 +27,8 @@ function sync_task_cards() {
     }
 }
 
-/// @function spawn_q4_popup_buttons()
-/// @description Spawns the DISCARD and DEFER button instances for the Q4
+
+/// Spawns the DISCARD and DEFER button instances for the Q4
 /// choice popup. Called automatically when a task is assigned to Q4.
 function spawn_q4_popup_buttons() {
     with (obj_button) instance_destroy();

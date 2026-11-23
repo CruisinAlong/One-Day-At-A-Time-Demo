@@ -1,4 +1,4 @@
-/// obj_quadrant_panel - Create Event (no sprite - logical hit-zone only)
+/// obj_quadrant_panel - Create Event
 /// quadrant_key, zone_x/y/w/h are set via Room Editor Creation Code.
 
 quadrant_key = "q1";

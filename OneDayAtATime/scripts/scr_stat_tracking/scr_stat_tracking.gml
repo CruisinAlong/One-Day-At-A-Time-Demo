@@ -3,8 +3,8 @@
 /// accessed/modified ONLY through these functions, so other systems have a
 /// single clean integration point.
 
-/// @function stats_init()
-/// @description Initializes all three statistics to 50. Call once at game start.
+/// stats_init()
+/// Initializes all three statistics to 50. Call once at game start.
 function stats_init() {
     with (obj_game_controller) {
         productivity = 50;
@@ -13,9 +13,9 @@ function stats_init() {
     }
 }
 
-/// @function stat_get(_stat_name)
-/// @description Returns the current value of a stat by name.
-/// @param _stat_name One of "productivity", "happiness", "relaxation"
+
+/// Returns the current value of a stat by name.
+///  One of "productivity", "happiness", "relaxation"
 function stat_get(_stat_name) {
     switch (_stat_name) {
         case "productivity": return obj_game_controller.productivity;
@@ -27,8 +27,8 @@ function stat_get(_stat_name) {
     }
 }
 
-/// @function stat_modify(_stat_name, _amount)
-/// @description Modifies a stat by _amount, clamped between 0 and 100.
+
+/// Modifies a stat by _amount, clamped between 0 and 100.
 /// Other systems (task resolution, future events, etc.) should call this
 /// rather than setting the variables directly.
 function stat_modify(_stat_name, _amount) {

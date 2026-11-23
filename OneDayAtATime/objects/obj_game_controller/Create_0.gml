@@ -89,7 +89,7 @@ layout = {
     stat_panel_h: 110,
     stat_line_gap: 28,
 
-    // Reserved space for the (unimplemented) Day banner, top-right of stat panel
+    // Reserved space for the  Day banner, top-right of stat panel
     day_banner_x: 760,
     day_banner_y: 20,
     day_banner_w: 480,
