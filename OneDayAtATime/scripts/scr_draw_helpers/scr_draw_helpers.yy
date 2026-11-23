@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_draw_helpers",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_draw_helpers",
+  "parent":{
+    "name":"group1",
+    "path":"folders/group1.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

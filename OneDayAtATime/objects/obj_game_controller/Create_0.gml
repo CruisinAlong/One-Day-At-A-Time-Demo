@@ -1,6 +1,8 @@
 /// obj_game_controller - Create Event
 /// Central controller: holds all game state and runs initialization.
 
+depth = -10000; // draw popup overlay in front of panels/cards, behind buttons
+
 // ---------------------------------------------------------
 // STATISTICS (managed through scr_stat_tracking functions)
 // ---------------------------------------------------------
@@ -9,11 +11,13 @@ stats_init();
 // ---------------------------------------------------------
 // BACKLOG PRESSURE
 // ---------------------------------------------------------
+// UNIMPLEMENTED
 backlog_pressure = 0; // 0 - 100
 
 // ---------------------------------------------------------
 // DAY PROGRESSION
 // ---------------------------------------------------------
+// UNIMPLEMENTED
 game_day = 1;
 max_days = 4;
 game_over = false;
@@ -23,16 +27,14 @@ ending_description = "";
 // ---------------------------------------------------------
 // TASK POOLS
 // ---------------------------------------------------------
-// available_tasks: tasks the player can currently drag/assign
-// deferred_tasks: tasks carried over from Q3 or Q4-defer, added back next day
 available_tasks = [];
+scheduled_tasks = [];
 deferred_tasks = [];
+discarded_tasks = [];
 
 // ---------------------------------------------------------
 // EISENHOWER MATRIX
 // ---------------------------------------------------------
-// Each quadrant has a capacity (modifiable by future events) and an array
-// of currently assigned task structs (length <= capacity).
 quadrant_capacity = {
     q1: 1,
     q2: 1,
@@ -47,20 +49,27 @@ quadrant_tasks = {
     q4: []
 };
 
-// ---------------------------------------------------------
-// DRAG AND DROP STATE
-// ---------------------------------------------------------
-dragging = false;
-drag_task = noone;       // the task struct currently being dragged
-drag_source = "";        // "available" or "q1"/"q2"/"q3"/"q4"
-drag_source_index = -1;  // index within source array
-drag_offset_x = 0;
-drag_offset_y = 0;
-mouse_x_prev = 0;
-mouse_y_prev = 0;
 
-// Feedback flags (reset every step, set during input handling)
-invalid_drop_flash = 0; // frames remaining to show invalid-drop feedback
+quadrant_colors = {
+    q1: c_lime,
+    q2: c_aqua,
+    q3: c_orange,
+    q4: c_red
+};
+
+quadrant_labels = {
+    q1: "Urgent & Important",
+    q2: "Not Urgent, Important",
+    q3: "Urgent, Not Important",
+    q4: "Not Urgent & Not Important"
+};
+
+// ---------------------------------------------------------
+// DRAG FEEDBACK (invalid-drop flash only - drag itself is handled
+// by obj_task_card)
+// ---------------------------------------------------------
+invalid_drop_flash = 0;
+invalid_drop_quadrant = "";
 
 // ---------------------------------------------------------
 // Q4 CHOICE POPUP STATE
@@ -69,33 +78,43 @@ q4_choice_active = false;
 q4_choice_task = noone;
 
 // ---------------------------------------------------------
-// LAYOUT CONSTANTS (interface positions - 1280x720 room)
+// LAYOUT CONSTANTS (matches mockup: matrix left, stats top-left,
+// tasks right in a 2x2 grid. Room target: 1280x720)
 // ---------------------------------------------------------
 layout = {
-    stat_panel_x: 20,
+    // Stat panel - small bordered box, top-left
+    stat_panel_x: 40,
     stat_panel_y: 20,
-    stat_bar_w: 200,
-    stat_bar_h: 20,
+    stat_panel_w: 340,
+    stat_panel_h: 110,
+    stat_line_gap: 28,
 
-    matrix_x: 350,
-    matrix_y: 150,
-    quad_w: 280,
-    quad_h: 200,
-    quad_gap: 10,
+    // Reserved space for the (unimplemented) Day banner, top-right of stat panel
+    day_banner_x: 760,
+    day_banner_y: 20,
+    day_banner_w: 480,
+    day_banner_h: 110,
 
-    task_area_x: 20,
-    task_area_y: 150,
-    card_w: 300,
-    card_h: 70,
-    card_gap: 10,
+    // Eisenhower Matrix - ONE bordered frame, split visually by cross-lines
+    matrix_x: 40,
+    matrix_y: 170,
+    matrix_w: 680,
+    matrix_h: 460,
 
-    end_day_btn_x: 1100,
-    end_day_btn_y: 650,
-    end_day_btn_w: 150,
-    end_day_btn_h: 50
+    // Task cards - 2x2 grid on the right
+    task_area_x: 760,
+    task_area_y: 170,
+    card_w: 220,
+    card_h: 140,
+    card_gap_x: 20,
+    card_gap_y: 20,
+    card_cols: 2,
+
+    quad_card_w: 260,
+    quad_card_h: 60
 };
 
 // ---------------------------------------------------------
 // START DAY 1
 // ---------------------------------------------------------
-game_start_new_day();
+game_start_new_day(); // also calls sync_task_cards() internally

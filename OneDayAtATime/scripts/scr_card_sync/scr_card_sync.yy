@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_card_sync",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_card_sync",
+  "parent":{
+    "name":"group1",
+    "path":"folders/group1.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

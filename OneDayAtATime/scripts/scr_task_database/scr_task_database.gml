@@ -1,6 +1,5 @@
 //I know this is your task but i did this so the day can start. 1 Placeholder event has been added so you can iterate as needed.
 
-
 function task_database_get() {
     return [
         {
@@ -10,7 +9,38 @@ function task_database_get() {
             prod_fx: 15,
             happy_fx: -5,
             relax_fx: -10,
-            status: "available"
+            status: "available",      
+            assigned_quadrant: ""     
+        },
+		{
+            id: 1,
+            name: "placeholder_2",
+            description: "this is the content of the event",
+            prod_fx: 15,
+            happy_fx: -5,
+            relax_fx: -10,
+            status: "available",      
+            assigned_quadrant: ""     
+        },
+		{
+            id: 2,
+            name: "placeholder_3",
+            description: "this is the content of the event",
+            prod_fx: 15,
+            happy_fx: -5,
+            relax_fx: -10,
+            status: "available",      
+            assigned_quadrant: ""     
+        },
+		{
+            id: 3,
+            name: "placeholder_4",
+            description: "this is the content of the event",
+            prod_fx: 15,
+            happy_fx: -5,
+            relax_fx: -10,
+            status: "available",      
+            assigned_quadrant: ""     
         }
     ];
 }
@@ -28,7 +58,8 @@ function task_database_clone() {
             prod_fx: _t.prod_fx,
             happy_fx: _t.happy_fx,
             relax_fx: _t.relax_fx,
-            status: _t.status
+            status: _t.status,
+            assigned_quadrant: _t.assigned_quadrant
         });
     }
     return _clone;
