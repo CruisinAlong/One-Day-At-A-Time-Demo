@@ -16,7 +16,7 @@ function game_start_new_day() {
         quadrant_tasks.q3 = [];
         quadrant_tasks.q4 = [];
 
-        var _db = task_database_clone();
+        var _db = TaskDatabaseClone();
         var _db_len = array_length(_db);
         var _new_tasks = [];
         for (var i = 0; i < 4; i++) {
@@ -38,9 +38,14 @@ function game_start_new_day() {
 
 /// Returns the index of _task inside _array (matched by id), or -1.
 function task_array_find_index(_array, _task) {
-    for (var i = 0; i < array_length(_array); i++) {
-        if (_array[i].id == _task.id) return i;
+    for (var i = 0; i < array_length(_array); i++)
+    {
+        if (_array[i].taskId == _task.taskId)
+        {
+            return i;
+        }
     }
+
     return -1;
 }
 
@@ -87,17 +92,21 @@ function remove_task_from_all_locations(_task) {
 /// since that's just bookkeeping with no UI interruption.
 function assign_task_to_quadrant(_task, _key) {
     with (obj_game_controller) {
+
+
         if (!quadrant_has_space(_key)) return false;
 
         remove_task_from_all_locations(_task);
+
         _task.status = "assigned";
-        _task.assigned_quadrant = _key;
+        _task.assignedQuadrant = _key;
 
         var _arr = quadrant_tasks[$ _key];
         array_push(_arr, _task);
         quadrant_tasks[$ _key] = _arr;
 
-        if (_key == "q3") {
+        if (_key == "q3")
+        {
             schedule_task_q3(_task);
         }
 
