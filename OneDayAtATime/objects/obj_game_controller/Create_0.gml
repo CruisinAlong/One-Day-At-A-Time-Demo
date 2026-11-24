@@ -1,7 +1,8 @@
 /// obj_game_controller - Create Event
 /// Central controller: holds all game state and runs initialization.
 
-depth = -10000; // draw popup overlay in front of panels/cards, behind buttons
+depth = 100;
+visible = true;
 
 // ---------------------------------------------------------
 // STATISTICS (managed through scr_stat_tracking functions)

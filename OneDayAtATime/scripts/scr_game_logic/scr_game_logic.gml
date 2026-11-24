@@ -1,7 +1,12 @@
 /// Game logic module: task assignment, quadrant capacity management, and
-/// task repositioning. Q3 scheduling / Q4 discard-defer storage live in
-/// scr_task_scheduling.gml and are called from here at the right moments.
+/// task repositioning.
 
+
+/// Sets up available tasks for the current day: generates four
+/// fresh predefined tasks from the database and pulls back any scheduled
+/// (Q3) or deferred (Q4) tasks from the previous day. Clears quadrant
+/// assignments. Does NOT advance game_day automatically - another developer
+/// is responsible for calling this as part of the four-day progression system.
 function game_start_new_day() {
     with (obj_game_controller) {
         show_debug_message("=== [game_start_new_day] START Day " + string(game_day) + " ===");
@@ -30,6 +35,8 @@ function game_start_new_day() {
     sync_task_cards();
 }
 
+
+/// Returns the index of _task inside _array (matched by id), or -1.
 function task_array_find_index(_array, _task) {
     for (var i = 0; i < array_length(_array); i++) {
         if (_array[i].id == _task.id) return i;
@@ -37,6 +44,9 @@ function task_array_find_index(_array, _task) {
     return -1;
 }
 
+
+/// Returns true if the given quadrant ("q1".."q4") has room
+/// for another task based on its configurable capacity.
 function quadrant_has_space(_key) {
     with (obj_game_controller) {
         var _count = array_length(quadrant_tasks[$ _key]);
@@ -45,6 +55,9 @@ function quadrant_has_space(_key) {
     }
 }
 
+
+/// Removes _task from available_tasks and every quadrant array.
+/// Does not touch scheduled/deferred/discarded storage.
 function remove_task_from_all_locations(_task) {
     with (obj_game_controller) {
         var _i = task_array_find_index(available_tasks, _task);
@@ -63,20 +76,17 @@ function remove_task_from_all_locations(_task) {
     }
 }
 
+
+/// Attempts to move _task into quadrant _key. Returns true on
+/// success, false if the quadrant is full. All four quadrants behave the
+/// same at drop time - the task simply sits in its slot. Q4's discard/defer
+/// popup (scr_task_scheduling: discard_task_q4 / defer_task_q4 /
+/// spawn_q4_popup_buttons) is intentionally NOT triggered here - that flow
+/// belongs to the day-progression system being built by another developer.
+/// Q3 assignment still immediately schedules the task for the next day
+/// since that's just bookkeeping with no UI interruption.
 function assign_task_to_quadrant(_task, _key) {
     with (obj_game_controller) {
-        if (_key == "q4") {
-            if (q4_choice_active) return false;
-
-            remove_task_from_all_locations(_task);
-            _task.status = "pending_choice";
-            _task.assigned_quadrant = "q4";
-            q4_choice_active = true;
-            q4_choice_task = _task;
-            spawn_q4_popup_buttons();
-            return true;
-        }
-
         if (!quadrant_has_space(_key)) return false;
 
         remove_task_from_all_locations(_task);
@@ -95,6 +105,9 @@ function assign_task_to_quadrant(_task, _key) {
     }
 }
 
+
+/// Removes _task from wherever it is and returns it to the
+/// available tasks area, resetting its status/assigned_quadrant.
 function return_task_to_available(_task) {
     with (obj_game_controller) {
         remove_task_from_all_locations(_task);
@@ -103,6 +116,10 @@ function return_task_to_available(_task) {
         array_push(available_tasks, _task);
     }
 }
+
+// ---------------------------------------------------------
+// LAYOUT / HIT-TESTING HELPERS (shared by Step input and Draw rendering)
+// ---------------------------------------------------------
 
 
 /// Returns {x, y, w, h} for one quarter of the single matrix
@@ -119,6 +136,8 @@ function get_quadrant_rect(_key) {
     }
 }
 
+
+/// Returns the rect for the task card at _index within quadrant _key.
 function get_quadrant_card_rect(_key, _index) {
     with (obj_game_controller) {
         var _q = get_quadrant_rect(_key);

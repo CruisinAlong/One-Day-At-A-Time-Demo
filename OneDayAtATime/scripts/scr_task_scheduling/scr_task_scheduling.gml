@@ -1,15 +1,8 @@
 /// Q3 scheduling and Q4 discard/defer storage.
-/// This is the integration point u should call into when
+/// This is the integration point another developer should call into when
 /// starting a new day (retrieve_carried_over_tasks is already wired into
 /// game_start_new_day in scr_game_logic, so no extra call is needed there).
 
-
-/// Marks _task as scheduled for the next day and stores it in
-/// the controller's scheduled_tasks collection. The task is NOT removed from
-/// its visual quadrant slot for the remainder of the current day - it still
-/// displays in Q3 so the player can see it's been scheduled. It is excluded
-/// from the current day's available_tasks pool (already removed by
-/// assign_task_to_quadrant before this is called).
 function schedule_task_q3(_task) {
     with (obj_game_controller) {
         _task.status = "scheduled";
@@ -19,12 +12,12 @@ function schedule_task_q3(_task) {
 }
 
 
-/// Called when the player chooses "Defer" in the Q4 popup.
-/// Stores the task in the deferred_tasks collection so it becomes available
-/// again when the next day starts. Currently does not touch statistics or backlog
-/// pressure
+/// Called when the player chooses "Defer" during Q4 resolution.
+/// Removes the task from the Q4 slot and stores it in deferred_tasks so it
+/// becomes available again when the next day starts.
 function defer_task_q4(_task) {
     with (obj_game_controller) {
+        remove_task_from_all_locations(_task);
         _task.status = "deferred";
         _task.assigned_quadrant = "";
         array_push(deferred_tasks, _task);
@@ -33,11 +26,11 @@ function defer_task_q4(_task) {
 }
 
 
-/// Called when the player chooses "Discard" in the Q4 popup.
-/// Permanently removes the task from active play. Kept in discarded_tasks
-/// purely as a record rn it is never retrieved or made available again, this should be able to be taken from again
+/// Called when the player chooses "Discard" during Q4 resolution.
+/// Removes the task from the Q4 slot and permanently removes it from play.
 function discard_task_q4(_task) {
     with (obj_game_controller) {
+        remove_task_from_all_locations(_task);
         _task.status = "discarded";
         _task.assigned_quadrant = "";
         array_push(discarded_tasks, _task);
@@ -45,11 +38,6 @@ function discard_task_q4(_task) {
     }
 }
 
-
-/// Pulls all Q3-scheduled and Q4-deferred tasks back into
-/// available_tasks, resetting their status/assigned_quadrant, then clears
-/// both source collections. Intended to be called once per new day (already
-/// wired into game_start_new_day()). Discarded tasks are never retrieved.
 function retrieve_carried_over_tasks() {
     with (obj_game_controller) {
         var _count = 0;
@@ -76,14 +64,10 @@ function retrieve_carried_over_tasks() {
     }
 }
 
-
-/// Read-only accessor for the current Q3 scheduled task list.
 function get_scheduled_tasks() {
     return obj_game_controller.scheduled_tasks;
 }
 
-
-/// Read-only accessor for the current Q4 deferred task list.
 function get_deferred_tasks() {
     return obj_game_controller.deferred_tasks;
 }

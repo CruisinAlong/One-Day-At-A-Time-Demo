@@ -1,5 +1,5 @@
-/// obj_game_controller - Draw Event (world space, respects depth)
-/// Draws only the stat panel and matrix frame background.
+/// obj_game_controller - Draw Event
+/// Draws the stat panel and matrix frame background.
 
 draw_set_font(-1);
 
