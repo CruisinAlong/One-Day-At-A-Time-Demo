@@ -17,8 +17,9 @@ function sync_task_cards() {
         for (var k = 0; k < array_length(_keys); k++) {
             var _key = _keys[k];
             var _arr = quadrant_tasks[$ _key];
-            for (var j = 0; j < array_length(_arr); j++) {
-                var _cr = get_quadrant_card_rect(_key, j);
+            var _total = array_length(_arr);
+            for (var j = 0; j < _total; j++) {
+                var _cr = get_quadrant_card_rect(_key, j, _total);
                 var _inst2 = instance_create_layer(_cr.x, _cr.y, "Instances", obj_task_card);
                 _inst2.task = _arr[j];
                 _inst2.home_quadrant = _key;

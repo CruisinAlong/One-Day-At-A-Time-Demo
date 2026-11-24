@@ -13,7 +13,6 @@
     {"$GMFolder":"","%Name":"group1","folderPath":"folders/group1.yy","name":"group1","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"group2","folderPath":"folders/group2.yy","name":"group2","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"group3","folderPath":"folders/group3.yy","name":"group3","resourceType":"GMFolder","resourceVersion":"2.0",},
-    {"$GMFolder":"","%Name":"Tasks","folderPath":"folders/Tasks.yy","name":"Tasks","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
   "ForcedPrefabProjectReferences":[],
   "IncludedFiles":[

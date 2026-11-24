@@ -146,16 +146,20 @@ function get_quadrant_rect(_key) {
 }
 
 
-/// Returns the rect for the task card at _index within quadrant _key.
-function get_quadrant_card_rect(_key, _index) {
+/// Returns the rect for the task card at _index within quadrant _key,
+/// out of _total cards currently in that quadrant. The whole vertical
+/// stack of _total cards is centered as a single block within the
+/// quadrant, rather than centering only the first card.
+function get_quadrant_card_rect(_key, _index, _total) {
     with (obj_game_controller) {
         var _q = get_quadrant_rect(_key);
+        var _gap = 8;
+        var _stack_h = (_total * layout.quad_card_h) + ((_total - 1) * _gap);
         var _x = _q.x + (_q.w - layout.quad_card_w) / 2;
-        var _y = _q.y + (_q.h - layout.quad_card_h) / 2 + _index * (layout.quad_card_h + 8);
+        var _y = _q.y + (_q.h - _stack_h) / 2 + _index * (layout.quad_card_h + _gap);
         return { x: _x, y: _y, w: layout.quad_card_w, h: layout.quad_card_h };
     }
 }
-
 
 /// Returns the rect for the available-task card at _index,
 /// arranged in a grid (card_cols columns) on the right side of the screen.

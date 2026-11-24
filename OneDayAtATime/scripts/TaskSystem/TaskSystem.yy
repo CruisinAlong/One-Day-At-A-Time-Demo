@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"TaskSystem",
   "parent":{
-    "name":"Tasks",
-    "path":"folders/Tasks.yy",
+    "name":"group1",
+    "path":"folders/group1.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

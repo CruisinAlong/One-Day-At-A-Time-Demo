@@ -10,10 +10,6 @@ visible = true;
 stats_init();
 
 // ---------------------------------------------------------
-// Initialization of Tasks
-// ---------------------------------------------------------
-TaskDatabase();
-// ---------------------------------------------------------
 // BACKLOG PRESSURE
 // ---------------------------------------------------------
 // UNIMPLEMENTED
@@ -54,72 +50,62 @@ quadrant_tasks = {
     q4: []
 };
 
-
 quadrant_colors = {
     q1: c_lime,
-    q2: c_aqua,
-    q3: c_orange,
+    q2: c_yellow,
+    q3: c_aqua,
     q4: c_red
 };
 
 quadrant_labels = {
-    q1: "Urgent & Important",
-    q2: "Not Urgent, Important",
-    q3: "Urgent, Not Important",
-    q4: "Not Urgent & Not Important"
+    q1: "URGENT + IMPORTANT",
+    q2: "NOT URGENT + IMPORTANT",
+    q3: "URGENT + NOT IMPORTANT",
+    q4: "NOT URGENT + NOT IMPORTANT"
 };
 
 // ---------------------------------------------------------
-// DRAG FEEDBACK (invalid-drop flash only - drag itself is handled
-// by obj_task_card)
+// DRAG / DROP FEEDBACK
 // ---------------------------------------------------------
 invalid_drop_flash = 0;
 invalid_drop_quadrant = "";
 
 // ---------------------------------------------------------
-// Q4 CHOICE POPUP STATE
+// Q4 DISCARD/DEFER CHOICE (currently unwired, kept for future use)
 // ---------------------------------------------------------
 q4_choice_active = false;
 q4_choice_task = noone;
 
 // ---------------------------------------------------------
-// LAYOUT CONSTANTS (matches mockup: matrix left, stats top-left,
-// tasks right in a 2x2 grid. Room target: 1280x720)
+// LAYOUT (shared by Draw event + scr_game_logic rect helpers)
 // ---------------------------------------------------------
 layout = {
-    // Stat panel - small bordered box, top-left
-    stat_panel_x: 40,
-    stat_panel_y: 20,
-    stat_panel_w: 340,
+    stat_panel_x: 32,
+    stat_panel_y: 32,
+    stat_panel_w: 280,
     stat_panel_h: 110,
     stat_line_gap: 28,
 
-    // Reserved space for the  Day banner, top-right of stat panel
-    day_banner_x: 760,
-    day_banner_y: 20,
-    day_banner_w: 480,
-    day_banner_h: 110,
+    matrix_x: 32,
+    matrix_y: 176,
+    matrix_w: 820,
+    matrix_h: 560,
 
-    // Eisenhower Matrix - ONE bordered frame, split visually by cross-lines
-    matrix_x: 40,
-    matrix_y: 170,
-    matrix_w: 680,
-    matrix_h: 460,
+    quad_card_w: 220,
+    quad_card_h: 48,
 
-    // Task cards - 2x2 grid on the right
-    task_area_x: 760,
-    task_area_y: 170,
+    task_area_x: 900,
+    task_area_y: 176,
+    card_cols: 1,
     card_w: 220,
-    card_h: 140,
-    card_gap_x: 20,
-    card_gap_y: 20,
-    card_cols: 2,
-
-    quad_card_w: 260,
-    quad_card_h: 60
+    card_h: 48,
+    card_gap_x: 16,
+    card_gap_y: 16
 };
 
 // ---------------------------------------------------------
-// START DAY 1
+// TASK SYSTEM (TaskSystem.gml - loads global.taskList from CSV)
 // ---------------------------------------------------------
-game_start_new_day(); // also calls sync_task_cards() internally
+TaskDatabase();
+
+game_start_new_day();
