@@ -21,7 +21,7 @@ if (q4_choice_active && q4_choice_task != noone) {
     draw_set_halign(fa_center);
     draw_set_valign(fa_top);
     draw_text(_px + _pw / 2, _py + 20, "Not Urgent & Not Important");
-    draw_text(_px + _pw / 2, _py + 50, "\"" + q4_choice_task.name + "\"");
+    draw_text(_px + _pw / 2, _py + 50, "\"" + q4_choice_task.currentTitle + "\"");
     draw_text(_px + _pw / 2, _py + 80, "Discard it permanently, or defer it to the next day?");
 
     draw_set_halign(fa_left);

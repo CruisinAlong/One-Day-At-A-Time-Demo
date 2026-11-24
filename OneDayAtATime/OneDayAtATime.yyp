@@ -13,9 +13,12 @@
     {"$GMFolder":"","%Name":"group1","folderPath":"folders/group1.yy","name":"group1","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"group2","folderPath":"folders/group2.yy","name":"group2","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"group3","folderPath":"folders/group3.yy","name":"group3","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Tasks","folderPath":"folders/Tasks.yy","name":"Tasks","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
   "ForcedPrefabProjectReferences":[],
-  "IncludedFiles":[],
+  "IncludedFiles":[
+    {"$GMIncludedFile":"","%Name":"Task List.csv","CopyToMask":-1,"filePath":"datafiles","name":"Task List.csv","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+  ],
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
@@ -35,6 +38,7 @@
     {"id":{"name":"scr_stat_tracking","path":"scripts/scr_stat_tracking/scr_stat_tracking.yy",},},
     {"id":{"name":"scr_task_database","path":"scripts/scr_task_database/scr_task_database.yy",},},
     {"id":{"name":"scr_task_scheduling","path":"scripts/scr_task_scheduling/scr_task_scheduling.yy",},},
+    {"id":{"name":"TaskSystem","path":"scripts/TaskSystem/TaskSystem.yy",},},
     {"id":{"name":"spr_button","path":"sprites/spr_button/spr_button.yy",},},
     {"id":{"name":"spr_card","path":"sprites/spr_card/spr_card.yy",},},
     {"id":{"name":"spr_panel","path":"sprites/spr_panel/spr_panel.yy",},},

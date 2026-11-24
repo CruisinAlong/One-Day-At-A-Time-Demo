@@ -9,6 +9,10 @@ depth = -10000; // draw popup overlay in front of panels/cards, behind buttons
 stats_init();
 
 // ---------------------------------------------------------
+// Initialization of Tasks
+// ---------------------------------------------------------
+TaskDatabase();
+// ---------------------------------------------------------
 // BACKLOG PRESSURE
 // ---------------------------------------------------------
 // UNIMPLEMENTED
