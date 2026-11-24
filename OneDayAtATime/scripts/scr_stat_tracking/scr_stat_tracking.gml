@@ -36,15 +36,65 @@ function stat_modify(_stat_name, _amount) {
         switch (_stat_name) {
             case "productivity":
                 productivity = clamp(productivity + _amount, 0, 100);
+				stat_check_thresholds("productivity", productivity);
                 break;
             case "happiness":
                 happiness = clamp(happiness + _amount, 0, 100);
+				stat_check_thresholds("happiness", happiness);
                 break;
             case "relaxation":
                 relaxation = clamp(relaxation + _amount, 0, 100);
+				stat_check_thresholds("relaxation", relaxation);
                 break;
             default:
                 show_debug_message("stat_modify: unknown stat name " + string(_stat_name));
         }
+    }
+}
+
+function stat_apply_task(_task) {
+    stat_modify("productivity", _task.currentP);
+    stat_modify("happiness", _task.currentH);
+    stat_modify("relaxation", _task.currentR);
+}
+
+//for now debug text
+function stat_check_thresholds(_stat_name, _value) {
+	switch (_stat_name) {
+		case "productivity":
+			if (_value <= 40) {
+				show_debug_message("PRODUCTIVITY: 40 threshold reached!");
+			}
+
+			if (_value <= 25) {
+				show_debug_message("PRODUCTIVITY: 25 threshold reached!");
+			}
+
+			if (_value <= 15) early_game_end("productivity")
+			break;
+
+		case "happiness":
+			if (_value <= 40) {
+				show_debug_message("HAPPINESS: 40 threshold reached!");
+			}
+
+			if (_value <= 25) {
+				 show_debug_message("HAPPINESS: 25 threshold reached!");
+			}
+
+			if (_value <= 15) early_game_end("happiness")
+			break;
+
+		case "relaxation":
+			if (_value <= 40) {
+				show_debug_message("RELAXATION: 40 threshold reached!");
+			}
+
+			if (_value <= 25) {
+				show_debug_message("RELAXATION: 25 threshold reached!");
+			}
+
+			if (_value <= 15) early_game_end("relaxation");
+			break;
     }
 }

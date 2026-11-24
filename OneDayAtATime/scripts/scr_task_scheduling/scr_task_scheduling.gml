@@ -56,8 +56,7 @@ function retrieve_carried_over_tasks() {
         for (var i = 0; i < array_length(scheduled_tasks); i++)
         {
             var _task = scheduled_tasks[i];
-
-            _task.isQ3 = false;
+			
             _task.isQ4 = false;
             _task.assignedQuadrant = 0;
             _task.status = "available";

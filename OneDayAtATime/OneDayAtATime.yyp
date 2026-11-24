@@ -27,6 +27,7 @@
   "resources":[
     {"id":{"name":"obj_button","path":"objects/obj_button/obj_button.yy",},},
     {"id":{"name":"obj_game_controller","path":"objects/obj_game_controller/obj_game_controller.yy",},},
+    {"id":{"name":"obj_next_day_button","path":"objects/obj_next_day_button/obj_next_day_button.yy",},},
     {"id":{"name":"obj_quadrant_panel","path":"objects/obj_quadrant_panel/obj_quadrant_panel.yy",},},
     {"id":{"name":"obj_task_card","path":"objects/obj_task_card/obj_task_card.yy",},},
     {"id":{"name":"rm_game","path":"rooms/rm_game/rm_game.yy",},},

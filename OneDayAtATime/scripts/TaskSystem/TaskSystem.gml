@@ -29,7 +29,7 @@ function TaskData(idVal, normalTitleVal, deferredTitleVal, normalPVal, normalHVa
     currentR = normalR;
 
 	status = "available";
-	assignedQuadrant = 0;
+	assignedQuadrant = "";
     // Quadrant flags
     isQ3 = false;
     isQ4 = false;
@@ -191,12 +191,6 @@ function TaskSetDeferred(task)
     task.currentP = task.deferredP;
     task.currentH = task.deferredH;
     task.currentR = task.deferredR;
-}
-
-
-function SetAvailability(task, statusVal)
-{
-	task.status = statusVal;
 }
 
 function TaskDatabaseClone()

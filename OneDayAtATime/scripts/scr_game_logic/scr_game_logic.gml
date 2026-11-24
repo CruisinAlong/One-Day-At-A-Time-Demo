@@ -19,8 +19,16 @@ function game_start_new_day() {
         var _db = TaskDatabaseClone();
         var _db_len = array_length(_db);
         var _new_tasks = [];
-        for (var i = 0; i < 4; i++) {
-            var _index = (game_day - 1) * 4 + i;
+		var _tasks_per_day = 3;
+
+		if (game_day == 1) _tasks_per_day = 4;
+		else if (game_day == max_days) _tasks_per_day = 2;
+		
+		_db = array_shuffle(_db);
+		
+        for (var i = 0; i < _tasks_per_day; i++) {
+            var _index = (game_day == 1)? i: 4 + (game_day - 2) * 3 + i;
+			
             _index = _index mod _db_len;
             array_push(_new_tasks, _db[_index]);
         }
@@ -31,7 +39,7 @@ function game_start_new_day() {
         show_debug_message("[game_start_new_day] Total available_tasks: " + string(array_length(available_tasks)));
         show_debug_message("=== [game_start_new_day] END ===");
     }
-
+	
     sync_task_cards();
 }
 
@@ -57,6 +65,7 @@ function quadrant_has_space(_key) {
         var _count = array_length(quadrant_tasks[$ _key]);
         var _cap = quadrant_capacity[$ _key];
         return (_count < _cap);
+		
     }
 }
 
@@ -78,24 +87,33 @@ function remove_task_from_all_locations(_task) {
                 quadrant_tasks[$ _key] = _arr;
             }
         }
+		
+		var _scheduled_index = task_array_find_index(scheduled_tasks, _task);
+
+        if (_scheduled_index != -1) scheduled_tasks = array_delete(scheduled_tasks, _scheduled_index, 1);
     }
 }
 
 
 /// Attempts to move _task into quadrant _key. Returns true on
-/// success, false if the quadrant is full. All four quadrants behave the
-/// same at drop time - the task simply sits in its slot. Q4's discard/defer
-/// popup (scr_task_scheduling: discard_task_q4 / defer_task_q4 /
-/// spawn_q4_popup_buttons) is intentionally NOT triggered here - that flow
-/// belongs to the day-progression system being built by another developer.
-/// Q3 assignment still immediately schedules the task for the next day
-/// since that's just bookkeeping with no UI interruption.
+/// success, false if the quadrant is full. 
+/// Tasks are only processed after clicking next day button
 function assign_task_to_quadrant(_task, _key) {
     with (obj_game_controller) {
-
-
+        // Q3 carried-over tasks can only be assigned to Q1 or Q2
+        if (_task.isQ3 && _key != "q1" && _key != "q2")
+        {
+            show_debug_message("Q3 carried-over tasks can only be placed in Q1 or Q2.");
+            return false;
+        }
+		if (game_day == max_days && _key == "q4")
+		{
+			show_debug_message("Q4 is disabled on the final day.");
+			return false;
+		}
+		
         if (!quadrant_has_space(_key)) return false;
-
+		
         remove_task_from_all_locations(_task);
 
         _task.status = "assigned";
@@ -104,16 +122,10 @@ function assign_task_to_quadrant(_task, _key) {
         var _arr = quadrant_tasks[$ _key];
         array_push(_arr, _task);
         quadrant_tasks[$ _key] = _arr;
-
-        if (_key == "q3")
-        {
-            schedule_task_q3(_task);
-        }
-
+		
         return true;
     }
 }
-
 
 /// Removes _task from wherever it is and returns it to the
 /// available tasks area, resetting its status/assigned_quadrant.
@@ -121,7 +133,8 @@ function return_task_to_available(_task) {
     with (obj_game_controller) {
         remove_task_from_all_locations(_task);
         _task.status = "available";
-        _task.assigned_quadrant = "";
+        _task.assignedQuadrant = "";
+		
         array_push(available_tasks, _task);
     }
 }
@@ -170,5 +183,31 @@ function get_available_card_rect(_index) {
         var _x = layout.task_area_x + _col * (layout.card_w + layout.card_gap_x);
         var _y = layout.task_area_y + _row * (layout.card_h + layout.card_gap_y);
         return { x: _x, y: _y, w: layout.card_w, h: layout.card_h };
+    }
+}
+
+function process_day_tasks()
+{
+    with (obj_game_controller)
+    {
+        // Q1: Apply stats
+        for (var i = 0; i < array_length(quadrant_tasks.q1); i++)
+        {
+            stat_apply_task(quadrant_tasks.q1[i]);
+        }
+
+        // Q2: Apply stats
+        for (var j = 0; j < array_length(quadrant_tasks.q2); j++)
+        {
+            stat_apply_task(quadrant_tasks.q2[j]);
+        }
+
+        // Q3: Schedule for the next day
+        for (var k = 0; k < array_length(quadrant_tasks.q3); k++)
+        {
+            schedule_task_q3(quadrant_tasks.q3[k]);
+        }
+
+        show_debug_message("Day tasks processed.");
     }
 }
