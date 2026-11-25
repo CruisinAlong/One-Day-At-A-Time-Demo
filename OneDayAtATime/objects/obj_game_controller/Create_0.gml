@@ -26,6 +26,12 @@ ending_name = "";
 ending_description = "";
 
 // ---------------------------------------------------------
+// END-OF-DAY REVIEW (deferred task review before advancing to next day)
+// ---------------------------------------------------------
+day_review_active = false;
+review_page = 0; 
+
+// ---------------------------------------------------------
 // TASK POOLS
 // ---------------------------------------------------------
 available_tasks = [];
@@ -108,4 +114,13 @@ layout = {
 // ---------------------------------------------------------
 TaskDatabase();
 
+
+// ---------------------------------------------------------
+// PERSISTENT UI (survives destroy_transient_buttons() calls)
+// ---------------------------------------------------------
+spawn_end_day_button();
+
+// ---------------------------------------------------------
+// DAY 1 SETUP (populates available_tasks and spawns task cards)
+// ---------------------------------------------------------
 game_start_new_day();

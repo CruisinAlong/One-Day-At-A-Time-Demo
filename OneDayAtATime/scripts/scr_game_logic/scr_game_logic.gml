@@ -2,11 +2,18 @@
 /// task repositioning.
 
 
-/// Sets up available tasks for the current day: generates four
-/// fresh predefined tasks from the database and pulls back any scheduled
-/// (Q3) or deferred (Q4) tasks from the previous day. Clears quadrant
-/// assignments. Does NOT advance game_day automatically - another developer
-/// is responsible for calling this as part of the four-day progression system.
+/// Game logic module: task assignment, quadrant capacity management, and
+/// task repositioning.
+
+#macro DAILY_TASK_POOL_SIZE 4
+
+/// Sets up available tasks for the current day: pulls back any scheduled
+/// (Q3) or deferred (Q4) tasks from the previous day first, then tops up
+/// the available pool with fresh tasks from the database so the total
+/// number of available tasks always stays at DAILY_TASK_POOL_SIZE,
+/// regardless of how many tasks were carried over. Clears quadrant
+/// assignments. Does NOT advance game_day automatically - advance_to_next_day()
+/// (below) is responsible for incrementing game_day before calling this.
 function game_start_new_day() {
     with (obj_game_controller) {
         show_debug_message("=== [game_start_new_day] START Day " + string(game_day) + " ===");
@@ -16,31 +23,46 @@ function game_start_new_day() {
         quadrant_tasks.q3 = [];
         quadrant_tasks.q4 = [];
 
-        var _db = TaskDatabaseClone();
-        var _db_len = array_length(_db);
-        var _new_tasks = [];
-		var _tasks_per_day = 3;
-
-		if (game_day == 1) _tasks_per_day = 4;
-		else if (game_day == max_days) _tasks_per_day = 2;
-		
-		_db = array_shuffle(_db);
-		
-        for (var i = 0; i < _tasks_per_day; i++) {
-            var _index = (game_day == 1)? i: 4 + (game_day - 2) * 3 + i;
-			
-            _index = _index mod _db_len;
-            array_push(_new_tasks, _db[_index]);
-        }
-
-        available_tasks = _new_tasks;
+        available_tasks = [];
         retrieve_carried_over_tasks();
 
+        var _carried_over_count = array_length(available_tasks);
+        var _fresh_needed = max(0, DAILY_TASK_POOL_SIZE - _carried_over_count);
+
+        var _db = TaskDatabaseClone();
+        var _db_len = array_length(_db);
+        for (var i = 0; i < _fresh_needed; i++) {
+            var _index = (game_day - 1) * DAILY_TASK_POOL_SIZE + i;
+            _index = _index mod _db_len;
+            array_push(available_tasks, _db[_index]);
+        }
+
+        show_debug_message("[game_start_new_day] Carried-over: " + string(_carried_over_count) + ", Fresh added: " + string(_fresh_needed));
         show_debug_message("[game_start_new_day] Total available_tasks: " + string(array_length(available_tasks)));
         show_debug_message("=== [game_start_new_day] END ===");
     }
-	
+
     sync_task_cards();
+}
+
+
+/// Called when the player finishes the end-of-day review (presses
+/// "NEXT DAY"). Advances game_day and, if the final day hasn't been
+/// reached, starts the new day. If max_days has been exceeded, flags
+/// game_over - ending evaluation (scr_ending_evaluation) is left for
+/// another developer to wire in.
+function advance_to_next_day() {
+    with (obj_game_controller) {
+        game_day += 1;
+
+        if (game_day > max_days) {
+            game_over = true;
+            show_debug_message("[Day Progression] Final day reached. game_over = true.");
+            return;
+        }
+    }
+
+    game_start_new_day();
 }
 
 
@@ -65,7 +87,6 @@ function quadrant_has_space(_key) {
         var _count = array_length(quadrant_tasks[$ _key]);
         var _cap = quadrant_capacity[$ _key];
         return (_count < _cap);
-		
     }
 }
 
@@ -87,33 +108,32 @@ function remove_task_from_all_locations(_task) {
                 quadrant_tasks[$ _key] = _arr;
             }
         }
-		
-		var _scheduled_index = task_array_find_index(scheduled_tasks, _task);
-
-        if (_scheduled_index != -1) scheduled_tasks = array_delete(scheduled_tasks, _scheduled_index, 1);
     }
 }
 
 
 /// Attempts to move _task into quadrant _key. Returns true on
-/// success, false if the quadrant is full. 
-/// Tasks are only processed after clicking next day button
+/// success, false if the quadrant is full. All four quadrants behave the
+/// same at drop time - the task simply sits in its slot. Q4's discard/defer
+/// popup (scr_task_scheduling: discard_task_q4 / defer_task_q4 /
+/// spawn_q4_popup_buttons) is intentionally NOT triggered here - that flow
+/// is now driven by the END DAY / end-of-day review system instead.
+/// Q3 assignment still immediately schedules the task for the next day
+/// since that's just bookkeeping with no UI interruption.
+/// Tasks carried over from a previous day's Q3 (marked locked_to_q1q2 by
+/// retrieve_carried_over_tasks) are rejected outright if the player tries
+/// to drop them into Q3 or Q4 again - they must be resolved via Q1/Q2.
 function assign_task_to_quadrant(_task, _key) {
     with (obj_game_controller) {
-        // Q3 carried-over tasks can only be assigned to Q1 or Q2
-        if (_task.isQ3 && _key != "q1" && _key != "q2")
-        {
-            show_debug_message("Q3 carried-over tasks can only be placed in Q1 or Q2.");
+
+        if ((_key == "q3" || _key == "q4")
+            && variable_struct_exists(_task, "locked_to_q1q2")
+            && _task.locked_to_q1q2) {
             return false;
         }
-		if (game_day == max_days && _key == "q4")
-		{
-			show_debug_message("Q4 is disabled on the final day.");
-			return false;
-		}
-		
+
         if (!quadrant_has_space(_key)) return false;
-		
+
         remove_task_from_all_locations(_task);
 
         _task.status = "assigned";
@@ -122,19 +142,23 @@ function assign_task_to_quadrant(_task, _key) {
         var _arr = quadrant_tasks[$ _key];
         array_push(_arr, _task);
         quadrant_tasks[$ _key] = _arr;
-		
+
+        if (_key == "q3")
+        {
+            schedule_task_q3(_task);
+        }
+
         return true;
     }
 }
 
 /// Removes _task from wherever it is and returns it to the
-/// available tasks area, resetting its status/assigned_quadrant.
+/// available tasks area, resetting its status/assignedQuadrant.
 function return_task_to_available(_task) {
     with (obj_game_controller) {
         remove_task_from_all_locations(_task);
         _task.status = "available";
         _task.assignedQuadrant = "";
-		
         array_push(available_tasks, _task);
     }
 }
@@ -174,6 +198,7 @@ function get_quadrant_card_rect(_key, _index, _total) {
     }
 }
 
+
 /// Returns the rect for the available-task card at _index,
 /// arranged in a grid (card_cols columns) on the right side of the screen.
 function get_available_card_rect(_index) {
@@ -183,31 +208,5 @@ function get_available_card_rect(_index) {
         var _x = layout.task_area_x + _col * (layout.card_w + layout.card_gap_x);
         var _y = layout.task_area_y + _row * (layout.card_h + layout.card_gap_y);
         return { x: _x, y: _y, w: layout.card_w, h: layout.card_h };
-    }
-}
-
-function process_day_tasks()
-{
-    with (obj_game_controller)
-    {
-        // Q1: Apply stats
-        for (var i = 0; i < array_length(quadrant_tasks.q1); i++)
-        {
-            stat_apply_task(quadrant_tasks.q1[i]);
-        }
-
-        // Q2: Apply stats
-        for (var j = 0; j < array_length(quadrant_tasks.q2); j++)
-        {
-            stat_apply_task(quadrant_tasks.q2[j]);
-        }
-
-        // Q3: Schedule for the next day
-        for (var k = 0; k < array_length(quadrant_tasks.q3); k++)
-        {
-            schedule_task_q3(quadrant_tasks.q3[k]);
-        }
-
-        show_debug_message("Day tasks processed.");
     }
 }
