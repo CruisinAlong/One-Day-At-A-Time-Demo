@@ -5,6 +5,18 @@ depth = 100;
 visible = true;
 
 // ---------------------------------------------------------
+// RANDOMIZATION
+// ---------------------------------------------------------
+randomize();
+show_debug_message("[RNG DEBUG] random_get_seed() reports: " + string(random_get_seed()));
+show_debug_message("[RNG DEBUG] sanity check irandom(999999): " + string(irandom(999999)));
+
+
+// ---------------------------------------------------------
+// STATISTICS (managed through scr_stat_tracking functions)
+// ---------------------------------------------------------
+
+// ---------------------------------------------------------
 // STATISTICS (managed through scr_stat_tracking functions)
 // ---------------------------------------------------------
 stats_init();
@@ -18,12 +30,12 @@ backlog_pressure = 0; // 0 - 100
 // ---------------------------------------------------------
 // DAY PROGRESSION
 // ---------------------------------------------------------
-// UNIMPLEMENTED
 game_day = 1;
 max_days = 4;
 game_over = false;
 ending_name = "";
 ending_description = "";
+ending_stat_summary = [];
 
 // ---------------------------------------------------------
 // END-OF-DAY REVIEW (deferred task review before advancing to next day)

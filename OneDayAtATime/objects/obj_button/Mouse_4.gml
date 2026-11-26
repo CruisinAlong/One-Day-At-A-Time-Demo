@@ -8,6 +8,7 @@ switch (button_action) {
         obj_game_controller.q4_choice_task = noone;
         sync_task_cards();
         destroy_transient_buttons();
+        end_day_and_review();
         break;
 
     case "defer":
@@ -16,6 +17,7 @@ switch (button_action) {
         obj_game_controller.q4_choice_task = noone;
         sync_task_cards();
         destroy_transient_buttons();
+        end_day_and_review();
         break;
 
     case "complete_deferred":

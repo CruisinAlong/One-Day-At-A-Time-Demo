@@ -105,27 +105,39 @@ function get_deferred_tasks() {
 }
 
 
-/// Called when the player presses "End Day". Moves whatever task is still
-/// sitting in Q4 (the day's unaddressed/"skipped" task) into the deferred
-/// stack, applies stat consequences for every task the player DID place
-/// this day (Q1/Q2), then opens the end-of-day review UI so the player can
-/// address (complete) any deferred tasks - weighing them against the
-/// current statistic meters - before the next day begins.
+/// Called when the player presses "End Day". If there are still tasks
+/// sitting in Q4, this pops up the DISCARD/DEFER choice for the first one
+/// (reusing the existing Q4 popup UI) and returns - resolving that choice
+/// (see obj_button/Mouse_4.gml "discard"/"defer" cases) re-calls
+/// end_day_and_review(), so the player is walked through each remaining
+/// Q4 task one at a time. Once Q4 is empty, applies stat consequences for
+/// every task placed in Q1/Q2, then opens the end-of-day review UI so the
+/// player can address any deferred tasks before the next day begins.
 function end_day_and_review() {
+    var _q4_has_tasks = false;
+
     with (obj_game_controller) {
-        var _q4_tasks = quadrant_tasks.q4;
-        for (var i = array_length(_q4_tasks) - 1; i >= 0; i--) {
-            defer_task_q4(_q4_tasks[i]);
+        if (array_length(quadrant_tasks.q4) > 0) {
+            _q4_has_tasks = true;
+            q4_choice_active = true;
+            q4_choice_task = quadrant_tasks.q4[0];
         }
+    }
 
+    if (_q4_has_tasks) {
+        spawn_q4_popup_buttons();
+        return;
+    }
+
+    with (obj_game_controller) {
         apply_placed_task_effects();
-
         day_review_active = true;
     }
 
     sync_task_cards();
     spawn_day_review_ui();
 }
+
 
 
 /// Applies stat consequences for every task currently placed in Q1 or Q2

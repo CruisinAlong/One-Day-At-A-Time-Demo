@@ -1,22 +1,44 @@
 /// Game logic module: task assignment, quadrant capacity management, and
 /// task repositioning.
 
-
-/// Game logic module: task assignment, quadrant capacity management, and
-/// task repositioning.
-
 #macro DAILY_TASK_POOL_SIZE 4
+
+/// Shuffles a copy of _arr in place (Fisher-Yates) and returns it.
+function array_shuffle(_arr) {
+    var _n = array_length(_arr);
+    for (var i = _n - 1; i > 0; i--) {
+        var _j = irandom(i);
+        var _tmp = _arr[i];
+        _arr[i] = _arr[_j];
+        _arr[_j] = _tmp;
+    }
+    return _arr;
+}
+
+/// Returns true if _id is present anywhere in _id_array.
+function array_contains_id(_id_array, _id) {
+    for (var i = 0; i < array_length(_id_array); i++) {
+        if (_id_array[i] == _id) return true;
+    }
+    return false;
+}
 
 /// Sets up available tasks for the current day: pulls back any scheduled
 /// (Q3) or deferred (Q4) tasks from the previous day first, then tops up
-/// the available pool with fresh tasks from the database so the total
-/// number of available tasks always stays at DAILY_TASK_POOL_SIZE,
-/// regardless of how many tasks were carried over. Clears quadrant
-/// assignments. Does NOT advance game_day automatically - advance_to_next_day()
-/// (below) is responsible for incrementing game_day before calling this.
+/// the available pool with fresh, RANDOMLY selected tasks from the
+/// database so the total number of available tasks always stays at
+/// DAILY_TASK_POOL_SIZE, regardless of how many tasks were carried over.
+/// Fresh picks avoid duplicating a taskId already sitting in the carried-
+/// over pool; if the database doesn't have enough unique remaining tasks
+/// to fill the pool, duplicates are allowed as a fallback so the pool
+/// still reaches full size. Clears quadrant assignments. Does NOT advance
+/// game_day automatically - advance_to_next_day() (below) is responsible
+/// for incrementing game_day before calling this.
 function game_start_new_day() {
     with (obj_game_controller) {
         show_debug_message("=== [game_start_new_day] START Day " + string(game_day) + " ===");
+        show_debug_message("[RNG DEBUG] seed at start of game_start_new_day: " + string(random_get_seed()));
+        show_debug_message("[RNG DEBUG] fresh irandom(999999) sample: " + string(irandom(999999)));
 
         quadrant_tasks.q1 = [];
         quadrant_tasks.q2 = [];
@@ -31,13 +53,53 @@ function game_start_new_day() {
 
         var _db = TaskDatabaseClone();
         var _db_len = array_length(_db);
-        for (var i = 0; i < _fresh_needed; i++) {
-            var _index = (game_day - 1) * DAILY_TASK_POOL_SIZE + i;
-            _index = _index mod _db_len;
-            array_push(available_tasks, _db[_index]);
+
+        // Build the set of taskIds already present (carried over), so
+        // fresh random picks can avoid duplicating them where possible.
+        var _used_ids = [];
+        for (var u = 0; u < _carried_over_count; u++) {
+            array_push(_used_ids, available_tasks[u].taskId);
         }
 
-        show_debug_message("[game_start_new_day] Carried-over: " + string(_carried_over_count) + ", Fresh added: " + string(_fresh_needed));
+        // Candidate indices into _db that aren't already carried over.
+        var _candidates = [];
+        for (var c = 0; c < _db_len; c++) {
+            if (!array_contains_id(_used_ids, _db[c].taskId)) {
+                array_push(_candidates, c);
+            }
+        }
+
+        var _candidates_before = "";
+        for (var p = 0; p < array_length(_candidates); p++) {
+            _candidates_before += string(_candidates[p]) + ",";
+        }
+        show_debug_message("[RNG DEBUG] candidates BEFORE shuffle (" + string(array_length(_candidates)) + " total): " + _candidates_before);
+
+        _candidates = array_shuffle(_candidates);
+
+        var _candidates_after = "";
+        for (var q = 0; q < array_length(_candidates); q++) {
+            _candidates_after += string(_candidates[q]) + ",";
+        }
+        show_debug_message("[RNG DEBUG] candidates AFTER shuffle: " + _candidates_after);
+
+        var _fresh_added = 0;
+        for (var i = 0; i < _fresh_needed; i++) {
+            var _index;
+            if (i < array_length(_candidates)) {
+                _index = _candidates[i];
+            } else {
+                // Not enough unique candidates left - fall back to a
+                // fully random pick (duplicates allowed) so the pool
+                // still fills to DAILY_TASK_POOL_SIZE.
+                _index = irandom(_db_len - 1);
+            }
+            array_push(available_tasks, _db[_index]);
+            show_debug_message("[RNG DEBUG] picked index " + string(_index) + " -> taskId " + string(_db[_index].taskId) + " '" + _db[_index].currentTitle + "'");
+            _fresh_added++;
+        }
+
+        show_debug_message("[game_start_new_day] Carried-over: " + string(_carried_over_count) + ", Fresh added: " + string(_fresh_added));
         show_debug_message("[game_start_new_day] Total available_tasks: " + string(array_length(available_tasks)));
         show_debug_message("=== [game_start_new_day] END ===");
     }
@@ -46,18 +108,18 @@ function game_start_new_day() {
 }
 
 
+
 /// Called when the player finishes the end-of-day review (presses
 /// "NEXT DAY"). Advances game_day and, if the final day hasn't been
-/// reached, starts the new day. If max_days has been exceeded, flags
-/// game_over - ending evaluation (scr_ending_evaluation) is left for
-/// another developer to wire in.
+/// reached, starts the new day. If max_days has been exceeded, runs
+/// the ending evaluation instead of starting a new day.
 function advance_to_next_day() {
     with (obj_game_controller) {
         game_day += 1;
 
         if (game_day > max_days) {
-            game_over = true;
-            show_debug_message("[Day Progression] Final day reached. game_over = true.");
+            show_debug_message("[Day Progression] Final day reached. Running ending evaluation.");
+            scr_ending_evaluation();
             return;
         }
     }
@@ -114,10 +176,11 @@ function remove_task_from_all_locations(_task) {
 
 /// Attempts to move _task into quadrant _key. Returns true on
 /// success, false if the quadrant is full. All four quadrants behave the
-/// same at drop time - the task simply sits in its slot. Q4's discard/defer
-/// popup (scr_task_scheduling: discard_task_q4 / defer_task_q4 /
-/// spawn_q4_popup_buttons) is intentionally NOT triggered here - that flow
-/// is now driven by the END DAY / end-of-day review system instead.
+/// same at drop time - the task simply sits in its slot, INCLUDING Q4.
+/// The player is free to move a task into/out of Q4 as many times as they
+/// like during the day; the DISCARD/DEFER choice is only asked once, when
+/// the player presses END DAY (see end_day_and_review), so whatever is
+/// sitting in Q4 at that point is what gets resolved.
 /// Q3 assignment still immediately schedules the task for the next day
 /// since that's just bookkeeping with no UI interruption.
 /// Tasks carried over from a previous day's Q3 (marked locked_to_q1q2 by

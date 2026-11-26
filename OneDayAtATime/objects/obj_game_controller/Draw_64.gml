@@ -28,6 +28,8 @@ if (q4_choice_active && q4_choice_task != noone) {
     draw_set_valign(fa_top);
 }
 
+
+
 if (day_review_active) {
     var _panel = get_day_review_panel_rect();
     var _px2 = _panel.x;
@@ -76,5 +78,54 @@ if (day_review_active) {
         draw_set_color(c_white);
     }
 
+    draw_set_valign(fa_top);
+}
+
+if (game_over) {
+    draw_set_alpha(0.85);
+    draw_set_color(c_black);
+    draw_rectangle(0, 0, room_width, room_height, false);
+    draw_set_alpha(1);
+
+    var _pw3 = 500;
+    var _ph3 = 340;
+    var _px3 = (room_width - _pw3) / 2;
+    var _py3 = (room_height - _ph3) / 2;
+
+    draw_set_color(make_color_rgb(45, 45, 55));
+    draw_rectangle(_px3, _py3, _px3 + _pw3, _py3 + _ph3, false);
+    draw_set_color(c_white);
+    draw_rectangle_border_width(_px3, _py3, _px3 + _pw3, _py3 + _ph3, 2);
+
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_top);
+    draw_text(_px3 + _pw3 / 2, _py3 + 24, ending_name);
+    draw_text_ext(_px3 + _pw3 / 2, _py3 + 60, ending_description, 22, _pw3 - 80);
+
+    var _row_y = _py3 + 140;
+    for (var i = 0; i < array_length(ending_stat_summary); i++) {
+        var _s = ending_stat_summary[i];
+
+        var _verdict_text = "RIGHT AT AVERAGE";
+        var _verdict_color = c_yellow;
+
+        if (_s.verdict == "above") {
+            _verdict_text = "ABOVE AVERAGE";
+            _verdict_color = c_lime;
+        } else if (_s.verdict == "below") {
+            _verdict_text = "BELOW AVERAGE";
+            _verdict_color = c_red;
+        }
+
+        draw_set_color(c_white);
+        draw_text(_px3 + _pw3 / 2, _row_y, _s.label + ": " + string(_s.value) + "/100");
+        draw_set_color(_verdict_color);
+        draw_text(_px3 + _pw3 / 2, _row_y + 26, _verdict_text);
+
+        _row_y += 64;
+    }
+
+    draw_set_color(c_white);
+    draw_set_halign(fa_left);
     draw_set_valign(fa_top);
 }
