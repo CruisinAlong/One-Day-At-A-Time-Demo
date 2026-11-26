@@ -6,3 +6,7 @@
 if (button_action == "end_day") {
     visible = !obj_game_controller.day_review_active;
 }
+
+if (button_action == "end_day") {
+	visible = !obj_game_controller.game_over;
+}
