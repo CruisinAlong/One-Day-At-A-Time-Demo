@@ -4,7 +4,7 @@
 
 if (q4_choice_active && q4_choice_task != noone) {
     var _pw = 500;
-    var _ph = 220;
+    var _ph = 260;
     var _px = (room_width - _pw) / 2;
     var _py = (room_height - _ph) / 2;
 
@@ -23,6 +23,58 @@ if (q4_choice_active && q4_choice_task != noone) {
     draw_text(_px + _pw / 2, _py + 20, "Not Urgent & Not Important");
     draw_text(_px + _pw / 2, _py + 50, "\"" + q4_choice_task.currentTitle + "\"");
     draw_text(_px + _pw / 2, _py + 80, "Discard it permanently, or defer it to the next day?");
+
+
+    var _dp = q4_choice_task.deferredP;
+    var _dh = q4_choice_task.deferredH;
+    var _dr = q4_choice_task.deferredR;
+
+    draw_set_color(c_silver);
+    draw_text(_px + _pw / 2, _py + 115, "DISCARD: permanently removes the task - no stat changes.");
+    draw_text(_px + _pw / 2, _py + 145,
+        "DEFER (if left unaddressed): P " + stat_format_delta(_dp) +
+        "  H " + stat_format_delta(_dh) +
+        "  R " + stat_format_delta(_dr));
+    draw_set_color(c_white);
+
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+}
+
+if (q4_choice_active && q4_choice_task != noone) {
+    var _pw = 500;
+    var _ph = 260;
+    var _px = (room_width - _pw) / 2;
+    var _py = (room_height - _ph) / 2;
+
+    draw_set_alpha(0.6);
+    draw_set_color(c_black);
+    draw_rectangle(0, 0, room_width, room_height, false);
+    draw_set_alpha(1);
+
+    draw_set_color(make_color_rgb(45, 45, 55));
+    draw_rectangle(_px, _py, _px + _pw, _py + _ph, false);
+    draw_set_color(c_white);
+    draw_rectangle_border_width(_px, _py, _px + _pw, _py + _ph, 2);
+
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_top);
+    draw_text(_px + _pw / 2, _py + 20, "Not Urgent & Not Important");
+    draw_text(_px + _pw / 2, _py + 50, "\"" + q4_choice_task.currentTitle + "\"");
+    draw_text(_px + _pw / 2, _py + 80, "Discard it permanently, or defer it to the next day?");
+
+
+    var _dp = q4_choice_task.deferredP;
+    var _dh = q4_choice_task.deferredH;
+    var _dr = q4_choice_task.deferredR;
+
+    draw_set_color(c_silver);
+    draw_text(_px + _pw / 2, _py + 115, "DISCARD: permanently removes the task - no stat changes.");
+    draw_text(_px + _pw / 2, _py + 145,
+        "DEFER (if left unaddressed): P " + stat_format_delta(_dp) +
+        "  H " + stat_format_delta(_dh) +
+        "  R " + stat_format_delta(_dr));
+    draw_set_color(c_white);
 
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
@@ -74,7 +126,15 @@ if (day_review_active) {
         draw_set_color(c_white);
         draw_text(_text_x, _text_top, "\"" + _task.currentTitle + "\"");
         draw_set_color(c_silver);
+        var _desc_h = string_height_ext(_task.currentDesc, 22, _text_w);
         draw_text_ext(_text_x, _text_top + 30, _task.currentDesc, 22, _text_w);
+
+
+        draw_set_color(c_white);
+        draw_text(_text_x, _text_top + 30 + _desc_h + 10, "If completed now: P " +
+            stat_format_delta(_task.currentP) +
+            "  H " + stat_format_delta(_task.currentH) +
+            "  R " + stat_format_delta(_task.currentR));
         draw_set_color(c_white);
     }
 

@@ -41,6 +41,12 @@ switch (button_action) {
         advance_to_next_day();
         break;
 
+    case "close_task_preview":
+        obj_game_controller.task_preview_active = false;
+        obj_game_controller.task_preview_task = noone;
+        destroy_transient_buttons();
+        break;
+
     case "end_day":
         end_day_and_review();
         break;

@@ -8,13 +8,6 @@ visible = true;
 // RANDOMIZATION
 // ---------------------------------------------------------
 randomize();
-show_debug_message("[RNG DEBUG] random_get_seed() reports: " + string(random_get_seed()));
-show_debug_message("[RNG DEBUG] sanity check irandom(999999): " + string(irandom(999999)));
-
-
-// ---------------------------------------------------------
-// STATISTICS (managed through scr_stat_tracking functions)
-// ---------------------------------------------------------
 
 // ---------------------------------------------------------
 // STATISTICS (managed through scr_stat_tracking functions)
@@ -93,6 +86,13 @@ invalid_drop_quadrant = "";
 // ---------------------------------------------------------
 q4_choice_active = false;
 q4_choice_task = noone;
+
+// ---------------------------------------------------------
+// TASK PREVIEW POPUP (shown when clicking - not dragging - an
+// available-pool task card; see obj_task_card Mouse_4/Mouse_56)
+// ---------------------------------------------------------
+task_preview_active = false;
+task_preview_task = noone;
 
 // ---------------------------------------------------------
 // LAYOUT (shared by Draw event + scr_game_logic rect helpers)

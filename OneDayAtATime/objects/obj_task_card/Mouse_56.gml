@@ -1,10 +1,25 @@
 /// obj_task_card - Global Left Released Event
 /// Ends the drag and attempts to drop the card on a quadrant or back into
-/// the available tasks area.
+/// the available tasks area. If the mouse barely moved since the press
+/// (a click rather than a drag) and this card belongs to the available
+/// pool, show the task preview popup instead of treating it as a drop.
 
 if (is_dragging) {
     is_dragging = false;
     depth = 0;
+
+    var _move_dist = point_distance(drag_start_x, drag_start_y, mouse_x, mouse_y);
+    var _CLICK_THRESHOLD = 6;
+
+    if (_move_dist <= _CLICK_THRESHOLD) {
+        if (home_quadrant == "available") {
+            obj_game_controller.task_preview_active = true;
+            obj_game_controller.task_preview_task = task;
+            spawn_task_preview_close_button();
+        }
+        sync_task_cards();
+        exit;
+    }
 
     var _target_key = "";
     var _cx = x + sprite_width / 2;

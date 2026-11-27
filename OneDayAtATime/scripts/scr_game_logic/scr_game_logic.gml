@@ -37,8 +37,6 @@ function array_contains_id(_id_array, _id) {
 function game_start_new_day() {
     with (obj_game_controller) {
         show_debug_message("=== [game_start_new_day] START Day " + string(game_day) + " ===");
-        show_debug_message("[RNG DEBUG] seed at start of game_start_new_day: " + string(random_get_seed()));
-        show_debug_message("[RNG DEBUG] fresh irandom(999999) sample: " + string(irandom(999999)));
 
         quadrant_tasks.q1 = [];
         quadrant_tasks.q2 = [];
@@ -68,20 +66,7 @@ function game_start_new_day() {
                 array_push(_candidates, c);
             }
         }
-
-        var _candidates_before = "";
-        for (var p = 0; p < array_length(_candidates); p++) {
-            _candidates_before += string(_candidates[p]) + ",";
-        }
-        show_debug_message("[RNG DEBUG] candidates BEFORE shuffle (" + string(array_length(_candidates)) + " total): " + _candidates_before);
-
         _candidates = array_shuffle(_candidates);
-
-        var _candidates_after = "";
-        for (var q = 0; q < array_length(_candidates); q++) {
-            _candidates_after += string(_candidates[q]) + ",";
-        }
-        show_debug_message("[RNG DEBUG] candidates AFTER shuffle: " + _candidates_after);
 
         var _fresh_added = 0;
         for (var i = 0; i < _fresh_needed; i++) {
@@ -95,7 +80,6 @@ function game_start_new_day() {
                 _index = irandom(_db_len - 1);
             }
             array_push(available_tasks, _db[_index]);
-            show_debug_message("[RNG DEBUG] picked index " + string(_index) + " -> taskId " + string(_db[_index].taskId) + " '" + _db[_index].currentTitle + "'");
             _fresh_added++;
         }
 

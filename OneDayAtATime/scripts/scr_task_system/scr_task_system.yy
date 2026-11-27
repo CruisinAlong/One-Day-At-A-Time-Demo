@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"TaskSystem",
+  "%Name":"scr_task_system",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"TaskSystem",
+  "name":"scr_task_system",
   "parent":{
     "name":"group1",
     "path":"folders/group1.yy",

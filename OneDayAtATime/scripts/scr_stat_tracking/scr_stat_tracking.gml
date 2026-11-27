@@ -28,6 +28,15 @@ function stat_get(_stat_name) {
 }
 
 
+/// Returns _value formatted with an explicit "+" sign for positive
+/// numbers and "-" for negative (0 shows as "+0"), used for displaying
+/// stat deltas in task popups (e.g. "+15", "-5").
+function stat_format_delta(_value) {
+    if (_value >= 0) return "+" + string(_value);
+    return string(_value);
+}
+
+
 /// Modifies a stat by _amount, clamped between 0 and 100.
 /// Other systems (task resolution, future events, etc.) should call this
 /// rather than setting the variables directly.

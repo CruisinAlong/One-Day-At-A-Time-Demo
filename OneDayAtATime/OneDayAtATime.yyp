@@ -38,7 +38,7 @@
     {"id":{"name":"scr_stat_tracking","path":"scripts/scr_stat_tracking/scr_stat_tracking.yy",},},
     {"id":{"name":"scr_task_database","path":"scripts/scr_task_database/scr_task_database.yy",},},
     {"id":{"name":"scr_task_scheduling","path":"scripts/scr_task_scheduling/scr_task_scheduling.yy",},},
-    {"id":{"name":"TaskSystem","path":"scripts/TaskSystem/TaskSystem.yy",},},
+    {"id":{"name":"scr_task_system","path":"scripts/scr_task_system/scr_task_system.yy",},},
     {"id":{"name":"spr_button","path":"sprites/spr_button/spr_button.yy",},},
     {"id":{"name":"spr_card","path":"sprites/spr_card/spr_card.yy",},},
     {"id":{"name":"spr_panel","path":"sprites/spr_panel/spr_panel.yy",},},

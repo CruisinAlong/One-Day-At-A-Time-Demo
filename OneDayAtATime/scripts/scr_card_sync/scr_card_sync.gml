@@ -154,3 +154,23 @@ function spawn_day_review_ui() {
         _close_btn.label = "CLOSE & NEXT DAY";
     }
 }
+
+/// Spawns the single "Close" button for the task preview popup (shown
+/// when the player clicks, rather than drags, an available-pool task
+/// card). Call this right after setting task_preview_active = true.
+function spawn_task_preview_close_button() {
+    destroy_transient_buttons();
+
+    var _btn_w = 160;
+    var _btn_h = 44;
+    var _px = (room_width - 480) / 2;
+    var _py = (room_height - 320) / 2;
+
+    var _close_btn = instance_create_layer(
+        _px + (480 - _btn_w) / 2,
+        _py + 320 - _btn_h - 20,
+        "Instances", obj_button
+    );
+    _close_btn.button_action = "close_task_preview";
+    _close_btn.label = "CLOSE";
+}
